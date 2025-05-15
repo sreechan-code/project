@@ -17,7 +17,7 @@ from datetime import datetime
 import pytz
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'Breast_Cancer_Project'
 
 # SQLAlchemy configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
