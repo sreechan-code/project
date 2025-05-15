@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breast Cancer Prediction System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url("{{ url_for('static', filename='nn.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: 40px;
+            animation: fadeIn 0.8s ease-in-out;
+            border-bottom: 4px solid transparent;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)) padding-box,
+                linear-gradient(to right, #3498db, #22a5e6) border-box;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #1a1a1a;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 1.5px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(to right, #3498db, #e67e22);
+        }
+
+        p {
+            color: #1a1a1a;
+            font-size: 1.2em;
+            font-weight: 300;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .greeting {
+            font-size: 1.4em;
+            font-weight: 400;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 35px;
+            color: #1a1a1a;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.15em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        }
+
+        .predict-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .predict-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1b6e9f);
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+        }
+
+        .admin-btn:hover {
+            background: linear-gradient(135deg, #d35400, #b34900);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            p {
+                font-size: 1em;
+            }
+
+            .greeting {
+                font-size: 1.2em;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="greeting">{{ greeting }}</div>
+        <h1>Welcome to Breast Cancer Prediction System</h1>
+        <p>Utilize advanced machine learning to predict breast cancer diagnosis with precision and care.</p>
+        <div class="button-container">
+            {% if not is_admin %}
+            <a href="{{ url_for('predict_form') }}" class="btn predict-btn">Predict Now</a>
+            {% endif %}
+            {% if is_admin %}
+            <a href="{{ url_for('admin') }}" class="btn admin-btn">Admin Panel</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="btn logout-btn">Logout</a>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url("{{ url_for('static', filename='hope.webp') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            padding-left: 60px;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #100f0f;
+        }
+
+        label {
+            float: left;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"],
+        .admin-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        input[type="submit"]:hover,
+        .admin-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .debug {
+            color: blue;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .register-link,
+        .forgot-password-link {
+            margin-top: 15px;
+            display: block;
+        }
+
+        .register-link a,
+        .forgot-password-link a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .register-link a:hover,
+        .forgot-password-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form method="POST" action="/login" id="login-form">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" placeholder="John Doe" required>
+
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" placeholder="Enter your password" required>
+
+            <input type="submit" value="Login">
+        </form>
+        {% if logged_in and is_admin %}
+        <a href="{{ url_for('admin') }}" class="admin-btn">Admin Panel</a>
+        {% endif %}
+        {% if logged_in %}
+        <div class="debug">Logged in: {{ logged_in }}, Admin: {{ is_admin }}</div>
+        {% endif %}
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        <div class="forgot-password-link">
+            <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+        </div>
+        <div class="register-link">
+            Don’t have an account? <a href="/register">Register here</a>
+        </div>
+    </div>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function (event) {
+            const name = document.getElementById('name').value;
+            const password = document.getElementById('password').value;
+
+            if (name.length < 3) {
+                event.preventDefault();
+                alert('Name must be at least 3 characters long.');
+                return;
+            }
+            if (password.length < 6) {
+                event.preventDefault();
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
+        });
+    </script>
+</body>
+
+</html>

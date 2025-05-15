@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Verify OTP</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url("{{ url_for('static', filename='hope.webp') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            padding-left: 60px;
+        }
+
+        .otp-container {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #100f0f;
+        }
+
+        label {
+            float: left;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .resend-link {
+            margin-top: 15px;
+            display: block;
+        }
+
+        .resend-link a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .resend-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="otp-container">
+        <h2>Enter OTP</h2>
+        <form method="POST" action="/forgot_otp" id="otp-form">
+            <label for="otp">OTP</label>
+            <input type="text" name="otp" id="otp" placeholder="Enter 6-digit OTP" required>
+
+            <input type="submit" value="Verify OTP">
+        </form>
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        <div class="resend-link">
+            <a href="{{ url_for('forgot_password') }}">Resend OTP</a>
+        </div>
+    </div>
+    <script>
+        document.getElementById('otp-form').addEventListener('submit', function (event) {
+            const otp = document.getElementById('otp').value;
+            if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+                event.preventDefault();
+                alert('OTP must be a 6-digit number.');
+            }
+        });
+    </script>
+</body>
+
+</html>

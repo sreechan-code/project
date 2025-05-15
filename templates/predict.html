@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breast Cancer Prediction Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            background-image: url("{{ url_for('static', filename='health.webp') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px;
+        }
+
+        .form-container {
+            background: transparent;
+            /* Fully transparent */
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            max-width: 700px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header img {
+            max-width: 150px;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #1a3c34;
+            font-size: 2em;
+            margin: 10px 0;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            color: #1a3c34;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1em;
+            color: #000000;
+            /* Black text */
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 6px rgba(52, 152, 219, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        input::placeholder {
+            color: #555;
+        }
+
+        input.invalid {
+            border-color: #e74c3c;
+            background: rgba(255, 235, 235, 0.9);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+            color: #3498db;
+            font-size: 0.9em;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            opacity: 0.6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.15em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            flex: 1;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(52, 152, 219, 0.5);
+            background: linear-gradient(135deg, #2980b9, #1b6e9f);
+        }
+
+        button[type="reset"] {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        button[type="reset"]:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            box-shadow: 0 6px 18px rgba(231, 76, 60, 0.5);
+        }
+
+        .help-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            margin-top: 10px;
+        }
+
+        .help-btn:hover {
+            background: linear-gradient(135deg, #27ae60, #219653);
+            box-shadow: 0 6px 18px rgba(46, 204, 113, 0.5);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .info-section {
+            margin-top: 30px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .info-toggle {
+            background: #3498db;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .info-toggle:hover {
+            background: #2980b9;
+        }
+
+        .info-content {
+            display: none;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .info-content h2 {
+            color: #1a3c34;
+            margin-bottom: 10px;
+        }
+
+        .info-content p,
+        .info-content li {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .history-section {
+            margin-top: 30px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .history-section h2 {
+            color: #1a3c34;
+            margin-bottom: 15px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            text-align: left;
+        }
+
+        .history-table th {
+            background: #3498db;
+            color: white;
+        }
+
+        .history-table tr:nth-child(even) {
+            background: rgba(240, 240, 240, 0.9);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            text-align: center;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+
+            .header img {
+                max-width: 100px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <div class="form-content">
+            <div class="header">
+                <img src="{{ url_for('static', filename='breast.webp') }}" alt="Breast Cancer Awareness">
+                <h1>Breast Cancer Prediction</h1>
+            </div>
+            <form action="/predict" method="POST" id="predict-form">
+                <div class="form-group">
+                    <label for="radius_mean">Radius Mean<span class="tooltip">?<span class="tooltiptext">Average radius
+                                of cells (6-28). Measures tumor size.</span></span></label>
+                    <input type="number" step="0.01" id="radius_mean" name="radius_mean" placeholder="e.g., 14.12"
+                        required>
+                    <img src="{{ url_for('static', filename='logo.avif') }}" alt="Radius Icon" class="icon">
+                    <div class="error-message" id="radius_mean-error">Must be between 6 and 28.</div>
+                </div>
+                <div class="form-group">
+                    <label for="texture_mean">Texture Mean<span class="tooltip">?<span class="tooltiptext">Standard
+                                deviation of gray-scale values (9-40). Indicates texture
+                                variation.</span></span></label>
+                    <input type="number" step="0.01" id="texture_mean" name="texture_mean" placeholder="e.g., 19.45"
+                        required>
+                    <img src="{{ url_for('static', filename='logo.avif') }}" alt="Texture Icon" class="icon">
+                    <div class="error-message" id="texture_mean-error">Must be between 9 and 40.</div>
+                </div>
+                <div class="form-group">
+                    <label for="perimeter_mean">Perimeter Mean<span class="tooltip">?<span class="tooltiptext">Average
+                                perimeter of cells (40-188). Measures tumor boundary.</span></span></label>
+                    <input type="number" step="0.01" id="perimeter_mean" name="perimeter_mean" placeholder="e.g., 92.34"
+                        required>
+                    <img src="{{ url_for('static', filename='logo.avif') }}" alt="Perimeter Icon" class="icon">
+                    <div class="error-message" id="perimeter_mean-error">Must be between 40 and 188.</div>
+                </div>
+                <div class="form-group">
+                    <label for="area_mean">Area Mean<span class="tooltip">?<span class="tooltiptext">Average area of
+                                cells (143-2501). Measures tumor size.</span></span></label>
+                    <input type="number" step="0.01" id="area_mean" name="area_mean" placeholder="e.g., 654.89"
+                        required>
+                    <img src="{{ url_for('static', filename='logo.avif') }}" alt="Area Icon" class="icon">
+                    <div class="error-message" id="area_mean-error">Must be between 143 and 2501.</div>
+                </div>
+                <div class="form-group">
+                    <label for="smoothness_mean">Smoothness Mean<span class="tooltip">?<span class="tooltiptext">Local
+                                variation in radius lengths (0.05-0.16). Indicates surface
+                                smoothness.</span></span></label>
+                    <input type="number" step="0.01" id="smoothness_mean" name="smoothness_mean"
+                        placeholder="e.g., 0.09" required>
+                    <img src="{{ url_for('static', filename='logo.avif') }}" alt="Smoothness Icon" class="icon">
+                    <div class="error-message" id="smoothness_mean-error">Must be between 0.05 and 0.16.</div>
+                </div>
+                <div class="form-group">
+                    <label for="compactness_mean">Compactness Mean<span class="tooltip">?<span
+                                class="tooltiptext">Perimeter^2 / Area (0.02-0.35). Measures tumor
+                                density.</span></span></label>
+                    <input type="number" step="0.01" id="compactness_mean" name="compactness_mean"
+                        placeholder="e.g., 0.12" required>
+                    <img src="{{ url_for('static', filename='logo.avif') }}" alt="Compactness Icon" class="icon">
+                    <div class="error-message" id="compactness_mean-error">Must be between 0.02 and 0.35.</div>
+                </div>
+                <div class="form-group">
+                    <label for="concavity_mean">Concavity Mean<span class="tooltip">?<span class="tooltiptext">Severity
+                                of concave portions (0-0.43). Measures tumor indentations.</span></span></label>
+                    <input type="number" step="0.01" id="concavity_mean" name="concavity_mean" placeholder="e.g., 0.08"
+                        required>
+                    <img src="{{ url_for('static', filename='logo.avif') }}" alt="Concavity Icon" class="icon">
+                    <div class="error-message" id="concavity_mean-error">Must be between 0 and 0.43.</div>
+                </div>
+                <div class="form-group">
+                    <label for="concave_points_mean">Concave Points Mean<span class="tooltip">?<span
+                                class="tooltiptext">Number of concave portions (0-0.2). Indicates tumor shape
+                                complexity.</span></span></label>
+                    <input type="number" step="0.01" id="concave_points_mean" name="concave_points_mean"
+                        placeholder="e.g., 0.05" required>
+                    <img src="{{ url_for('static', filename='logo.avif') }}" alt="Points Icon" class="icon">
+                    <div class="error-message" id="concave_points_mean-error">Must be between 0 and 0.2.</div>
+                </div>
+                <div class="button-group">
+                    <button type="submit">Analyze & Predict</button>
+                    <button type="reset">Reset Form</button>
+                </div>
+                <button type="button" class="help-btn" onclick="openModal()">Help & Instructions</button>
+            </form>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing...</p>
+            </div>
+            <div class="info-section">
+                <div class="info-toggle" onclick="toggleInfo()">About Breast Cancer Prediction</div>
+                <div class="info-content" id="info-content">
+                    <h2>Understanding Breast Cancer Prediction</h2>
+                    <p>This tool uses a machine learning model to predict whether a breast tumor is
+                        <strong>benign</strong> or <strong>malignant</strong> based on eight cellular features from the
+                        Wisconsin Breast Cancer Dataset.</p>
+                    <h3>How It Works</h3>
+                    <ul>
+                        <li><strong>Logistic Regression Model</strong>: Trained on historical data to classify tumors
+                            with high accuracy.</li>
+                        <li><strong>Features</strong>: Includes measurements like radius, texture, and concavity, which
+                            are critical indicators of tumor behavior.</li>
+                        <li><strong>Prediction</strong>: Outputs a probability score and classifies the tumor as benign
+                            (non-cancerous) or malignant (cancerous).</li>
+                    </ul>
+                    <h3>Why It Matters</h3>
+                    <p>Early detection of breast cancer significantly improves treatment outcomes. This tool assists
+                        healthcare professionals by providing a quick, data-driven assessment of tumor characteristics.
+                    </p>
+                    <h3>Feature Importance</h3>
+                    <p>Key features like <strong>concave points</strong> and <strong>area mean</strong> are strong
+                        indicators of malignancy, as they reflect tumor shape and size irregularities.</p>
+                    <p><em>Note</em>: Always consult a medical professional for diagnosis and treatment.</p>
+                </div>
+            </div>
+            {% if predictions %}
+            <div class="history-section">
+                <h2>Recent Predictions</h2>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Result</th>
+                            <th>Probability</th>
+                            <th>Timestamp (IST)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prediction in predictions %}
+                        <tr>
+                            <td>{{ prediction.result }}</td>
+                            <td>{{ prediction.probability|round(2) }}%</td>
+                            <td>{{ prediction.timestamp.strftime('%Y-%m-%d %H:%M:%S IST') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            <div class="modal" id="help-modal">
+                <div class="modal-content">
+                    <span class="close-btn" onclick="closeModal()">&times;</span>
+                    <h2>Help & Instructions</h2>
+                    <p>This tool predicts breast cancer using cellular measurements. Enter the following features:</p>
+                    <ul>
+                        <li><strong>Radius Mean</strong>: Average cell radius (6-28).</li>
+                        <li><strong>Texture Mean</strong>: Gray-scale variation (9-40).</li>
+                        <li><strong>Perimeter Mean</strong>: Cell boundary length (40-188).</li>
+                        <li><strong>Area Mean</strong>: Cell area (143-2501).</li>
+                        <li><strong>Smoothness Mean</strong>: Radius variation (0.05-0.16).</li>
+                        <li><strong>Compactness Mean</strong>: Density measure (0.02-0.35).</li>
+                        <li><strong>Concavity Mean</strong>: Indentation severity (0-0.43).</li>
+                        <li><strong>Concave Points Mean</strong>: Concave portions (0-0.2).</li>
+                    </ul>
+                    <p><strong>Instructions</strong>:</p>
+                    <ol>
+                        <li>Enter positive numerical values within the specified ranges.</li>
+                        <li>Click "Analyze & Predict" to get results.</li>
+                        <li>Use "Reset Form" to clear inputs.</li>
+                        <li>View recent predictions below (if available).</li>
+                    </ol>
+                    <p><em>Dataset</em>: Wisconsin Breast Cancer Dataset (UCI).</p>
+                    <p><em>Note</em>: This is a supportive tool. Consult a doctor for medical advice.</p>
+                </div>
+            </div>
+            <a href="{{ url_for('home') }}" class="back-btn">Back to Home</a>
+        </div>
+    </div>
+    <script>
+        const ranges = {
+            radius_mean: { min: 6, max: 28 },
+            texture_mean: { min: 9, max: 40 },
+            perimeter_mean: { min: 40, max: 188 },
+            area_mean: { min: 143, max: 2501 },
+            smoothness_mean: { min: 0.05, max: 0.16 },
+            compactness_mean: { min: 0.02, max: 0.35 },
+            concavity_mean: { min: 0, max: 0.43 },
+            concave_points_mean: { min: 0, max: 0.2 }
+        };
+
+        function validateInput(input) {
+            const id = input.id;
+            const value = parseFloat(input.value);
+            const range = ranges[id];
+            const errorDiv = document.getElementById(`${id}-error`);
+
+            if (isNaN(value) || value < range.min || value > range.max) {
+                input.classList.add('invalid');
+                errorDiv.style.display = 'block';
+                return false;
+            } else {
+                input.classList.remove('invalid');
+                errorDiv.style.display = 'none';
+                return true;
+            }
+        }
+
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', () => validateInput(input));
+        });
+
+        document.getElementById('predict-form').addEventListener('submit', function (e) {
+            let valid = true;
+            const inputs = document.querySelectorAll('input[type="number"]');
+            for (let input of inputs) {
+                if (!validateInput(input) || input.value <= 0) {
+                    valid = false;
+                }
+            }
+            if (!valid) {
+                e.preventDefault();
+                alert('Please correct invalid inputs. All values must be positive and within specified ranges.');
+                return;
+            }
+            document.getElementById('loading').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 3000); // Simulate processing
+        });
+
+        function toggleInfo() {
+            const infoContent = document.getElementById('info-content');
+            infoContent.style.display = infoContent.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function openModal() {
+            document.getElementById('help-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('help-modal').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
